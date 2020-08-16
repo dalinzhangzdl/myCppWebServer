@@ -49,8 +49,8 @@ Reactor模式是指，主线程只负责监听文件描述符上是否有事件�
 6. 当socket可写时，epoll_wait通知主线程。主线程将可写事件放入请求队列。
 7. 睡眠在请求队列上的某个工作线程被唤醒，往socket上写入服务器处理客户请求的结果。
 
-![reactor模式](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/Reactor.png)
-![reactor高并发](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/Reactor1.png)
+![reactor模式](./img/Reactor.png)
+![reactor高并发](./img/Reactor1.png)
 
 ### Proactor模式
 
@@ -77,21 +77,21 @@ Proactor模式将所有的I/O操作都交给主线程和内核来处理，工作
 
 半同步/半异步模式中，使用同步线程处理客户逻辑，异步线程用于处理I/O事件。异步线程监听到客户请求后，就将其封装成请求对象并插入到请求队列中；请求队列将通知工作在同步模式的工作线程来读取并处理该请求对象。
 
-![半同步/半异步模式](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/半同步半异步.png)
-![半同步/半反应堆模式](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/半同步半反应堆.png)
+![半同步/半异步模式](./img/半同步半异步.png)
+![半同步/半反应堆模式](./img/半同步半反应堆.png)
 半同步/半反应堆使用的事件处理模式是Reactor模式，存在以下缺点与不足：
 
 1. 主线程和工作线程共享请求队列。主线程往请求队列中添加任务，或者工作线程从请求队列中取出任务，队列需要加锁保护，浪费一定的CPU时间。
 2. 每个worker thread 在同一时间只能处理一个客户请求。高并发导致请求队列中堆积越来越多的任务对象，响应变慢。
 
-![高效的半同步/半异步模式](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/高效的半同步半异步.png)
+![高效的半同步/半异步模式](./img/高效的半同步半异步.png)
 主线程只负责监听，socket连接由工作线程来管理。**每个线程都维持自己的事件循环**。
 
 #### 领导者与追随者模式
 
 领导者与追随者模式是多个工作线程轮流获得事件源集合，轮流监听，分发并处理事件的一种模式。在任何时刻，程序都仅有一个领导者线程，负责监听IO事件。而其他线程都是追随者，他们休眠在线程池中等待成为新的领导者。若当前的领导者如果检测到I/O事件，首先要从线程池中推选出新的领导者线程，然后处理I/O事件。此时新的领导者等待新的I/O事件，而原来的领导者则处理I/O事件。
 
-![leader/follower](C:/Users/USER/Desktop/myCppWebServer_final/readMe/img/leader and follower.png)
+![leader/follower](./img/leader and follower.png)
 
 ## 半同步半异步线程池设计
 
